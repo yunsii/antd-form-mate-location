@@ -2,7 +2,7 @@
 
 <div align="center">
 
-📦 antd-form-mate 定位组件
+📦 [antd-form-mate](https://github.com/theprimone/antd-form-mate) 高德地图地理位置录入组件
 
 </div>
 
