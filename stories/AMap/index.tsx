@@ -4,8 +4,8 @@ import AMap from '../../src/components/CustomAMap';
 const { useState } = React;
 
 export default function () {
-  const [position, setPosition] = useState();
-  const [formattedAddress, setFormattedAddress] = useState();
+  const [position, setPosition] = useState<{ lng: number; lat: number }>();
+  const [formattedAddress, setFormattedAddress] = useState<string>();
   return (
     <AMap
       showAddress={false}
@@ -17,5 +17,5 @@ export default function () {
         setFormattedAddress(address);
       }}
     />
-  )
+  );
 }
