@@ -4,11 +4,4 @@ import LocationPicker from './components/LocationPicker';
 
 registerComponent('location', <LocationPicker />);
 
-export {
-  IntlProvider,
-  IntlConsumer,
-  createIntl,
-  IntlType,
-  zhCNIntl,
-  enUSIntl,
-} from './intl-context';
+export { IntlProvider, IntlConsumer, createIntl, IntlType, zhCNIntl, enUSIntl } from './contexts/IntlContext';

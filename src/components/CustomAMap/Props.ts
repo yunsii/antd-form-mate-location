@@ -9,10 +9,12 @@ export interface Poi {
   city: [];
   district: string;
   id: string;
-  location: {
-    P: number,
-    Q: number,
-  } & Position | '';
+  location:
+    | ({
+        P: number;
+        Q: number;
+      } & Position)
+    | '';
   name: string;
   typecode: string;
 }

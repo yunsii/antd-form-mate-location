@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Spin } from "antd";
-import { Map, Marker, MapProps } from "react-amap";
-import Geolocation from "react-amap-plugin-custom-geolocation";
-import CurrentAddress from "./CurrentAddress";
-import PlaceSearch from "./PlaceSearch";
-import { amapKey as defaultAmapKey } from '../../default-config';
+import React, { useState } from 'react';
+import { Spin } from 'antd';
+import { Map, Marker, MapProps } from 'react-amap';
+import Geolocation from 'react-amap-plugin-custom-geolocation';
+import CurrentAddress from './CurrentAddress';
+import PlaceSearch from './PlaceSearch';
+import { amapKey as defaultAmapKey } from '../../defaultConfig';
 import { Position } from './Props';
 
-const defaultPlugins = ["Scale"];
+const defaultPlugins = ['Scale'];
 
 let geocoder = null;
 const defaultMapWrapperHeight = 400;
@@ -31,10 +31,7 @@ export const geoCode = (address, callback) => {
 };
 
 function isLocationPosition(locationPosition: Position, position: Position) {
-  const {
-    lng: locationLng,
-    lat: locationLat,
-  } = locationPosition;
+  const { lng: locationLng, lat: locationLat } = locationPosition;
   const { lng, lat } = position;
   return locationLng === lng && locationLat === lat;
 }
@@ -62,7 +59,7 @@ export interface AMapProps {
   wrapperStyle?: React.CSSProperties;
   onClick?: (lng: number, lat: number) => void;
   /** get human-readable address */
-  getFormattedAddress?: (formattedAddress: string | null, info?: AddressInfo) => void;
+  getFormattedAddress?: (formattedAddress: string | undefined, info?: AddressInfo) => void;
   onCreated?: (map: any) => void;
   mapProps?: MapProps;
   onError?: (type: ErrorType, value: any) => void;
@@ -74,23 +71,23 @@ export const AMap: React.FC<AMapProps> = ({
   position,
   formattedAddress,
   wrapperStyle = {},
-  onClick = () => { },
-  getFormattedAddress = () => { },
-  onCreated = () => { },
+  onClick = () => {},
+  getFormattedAddress = () => {},
+  onCreated = () => {},
   mapProps,
   children,
-  onError = () => { },
+  onError = () => {},
   showAddress = true,
   amapKey = defaultAmapKey,
 }) => {
   const [locationPosition, setLocationPosition] = useState<Position>({} as Position);
 
-  const handleCreatedMap = map => {
+  const handleCreatedMap = (map) => {
     onCreated(map);
     if (!geocoder) {
       geocoder = new window.AMap.Geocoder({
         // city: '010', // 城市设为北京，默认：“全国”
-        radius: 1000 // 范围，默认：500
+        radius: 1000, // 范围，默认：500
       });
     }
   };
@@ -100,7 +97,9 @@ export const AMap: React.FC<AMapProps> = ({
       (geocoder as any).getAddress([longitude, latitude], (status, result) => {
         console.log(status, result);
         if (status === 'complete') {
-          const { regeocode: { addressComponent, formattedAddress: resultAddress } } = result;
+          const {
+            regeocode: { addressComponent, formattedAddress: resultAddress },
+          } = result;
           getFormattedAddress(resultAddress, {
             lat: latitude,
             lng: longitude,
@@ -109,15 +108,17 @@ export const AMap: React.FC<AMapProps> = ({
         } else {
           onError('getFormattedAddress', { status, result });
           console.error('getFormattedAddress:', status, result);
-          getFormattedAddress(null);
+          getFormattedAddress(undefined);
         }
       });
     }
   };
 
-  const centerProp = position ? {
-    center: position,
-  } : {};
+  const centerProp = position
+    ? {
+        center: position,
+      }
+    : {};
 
   const setHeight = () => {
     const { height } = wrapperStyle;
@@ -127,7 +128,7 @@ export const AMap: React.FC<AMapProps> = ({
       return `calc(${height} - ${titleHeight}px)`;
     }
     return defaultMapWrapperHeight;
-  }
+  };
 
   const customMap = (
     <div style={{ ...wrapperStyle, height: setHeight() }}>
@@ -136,15 +137,12 @@ export const AMap: React.FC<AMapProps> = ({
         plugins={defaultPlugins as any}
         events={{
           created: handleCreatedMap,
-          click: event => {
+          click: (event) => {
             const { lnglat } = event;
-            console.log(
-              "click position:",
-              `${lnglat.getLng()}, ${lnglat.getLat()}`
-            );
+            console.log('click position:', `${lnglat.getLng()}, ${lnglat.getLat()}`);
             onClick(lnglat.getLng(), lnglat.getLat());
             regeoCode(lnglat.getLng(), lnglat.getLat());
-          }
+          },
         }}
         version="1.4.14&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch"
         loading={
@@ -152,21 +150,23 @@ export const AMap: React.FC<AMapProps> = ({
             style={{
               position: 'absolute',
               top: `calc(50% - ${spinHight / 2}px)`,
-              left: `calc(50% - ${spinHight / 2}px)`
+              left: `calc(50% - ${spinHight / 2}px)`,
             }}
           />
         }
         {...centerProp}
         {...mapProps}
       >
-        {position && !isLocationPosition(locationPosition, position) && <Marker position={{ longitude: position.lng, latitude: position.lat }} />}
+        {position && !isLocationPosition(locationPosition, position) && (
+          <Marker position={{ longitude: position.lng, latitude: position.lat }} />
+        )}
         <Geolocation
           enableHighAccuracy
           timeout={5000}
           buttonPosition="RB"
           events={{
-            created: o => {
-              window.AMap.event.addListener(o, "complete", result => {
+            created: (o) => {
+              window.AMap.event.addListener(o, 'complete', (result) => {
                 const { addressComponent, formattedAddress, position } = result;
                 setLocationPosition({
                   lng: result.position.lng,
@@ -176,27 +176,23 @@ export const AMap: React.FC<AMapProps> = ({
                 getFormattedAddress(formattedAddress, {
                   lat: position.lat,
                   lng: position.lng,
-                  ...addressComponent
+                  ...addressComponent,
                 });
               }); // 返回定位信息
-              window.AMap.event.addListener(
-                o,
-                "error",
-                ({ info, message: msg }) => {
-                  onError('locationError', { info, message: msg });
-                  console.error("location error, info:", info, ", message:", msg);
-                }
-              ); // 返回定位出错信息
-            }
+              window.AMap.event.addListener(o, 'error', ({ info, message: msg }) => {
+                onError('locationError', { info, message: msg });
+                console.error('location error, info:', info, ', message:', msg);
+              }); // 返回定位出错信息
+            },
           }}
         />
         <PlaceSearch
-          onPlaceSelect={poi => {
-            console.log("PlaceSearch poi", poi);
+          onPlaceSelect={(poi) => {
+            console.log('PlaceSearch poi', poi);
             const { location } = poi;
             if (location) {
               onClick(location.lng, location.lat);
-              const address = `${poi.district}${poi.address}${poi.name}`
+              const address = `${poi.district}${poi.address}${poi.name}`;
               getFormattedAddress(address, {
                 lat: location.lat,
                 lng: location.lng,
@@ -212,6 +208,6 @@ export const AMap: React.FC<AMapProps> = ({
   );
 
   return showAddress ? <CurrentAddress formattedAddress={formattedAddress}>{customMap}</CurrentAddress> : customMap;
-}
+};
 
 export default AMap;

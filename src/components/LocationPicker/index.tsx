@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { Input, Modal } from "antd";
-import { EnvironmentOutlined } from "@ant-design/icons"
-import AMap, { ErrorType } from "../CustomAMap";
+import React, { Component } from 'react';
+import { Input, Modal } from 'antd';
+import { EnvironmentOutlined } from '@ant-design/icons';
+import AMap, { ErrorType } from '../CustomAMap';
 import { Position } from '../CustomAMap/Props';
 import styles from './index.less';
 
 export type Value = {
-  position: Position | undefined,
+  position: Position | undefined;
   formattedAddress: string;
 };
 
@@ -32,22 +32,22 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
     mapVisible: false,
     position: undefined,
     formattedAddress: '',
-    isMounted: false
+    isMounted: false,
   };
 
   componentDidMount() {
     this.setState({
-      isMounted: true
+      isMounted: true,
     });
   }
 
-  handleMapCreated = map => {
-    console.log("amap is created.");
+  handleMapCreated = (map) => {
+    console.log('amap is created.');
     if (map) this.map = map;
   };
 
   handleMapClick = (lng, lat) => {
-    console.log('handleMapClick', lng, lat)
+    console.log('handleMapClick', lng, lat);
     this.setState({
       position: { lng, lat },
     });
@@ -59,18 +59,18 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
     if (onChange) {
       onChange({
         position,
-        formattedAddress
+        formattedAddress,
       });
     }
     this.setState({
-      mapVisible: false
+      mapVisible: false,
     });
   };
 
   handleAfterMapClose = () => {
     this.setState({
       position: undefined,
-      formattedAddress: undefined
+      formattedAddress: undefined,
     });
     if (this.map) {
       this.map.clearMap();
@@ -80,9 +80,9 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
   handleInputChange = (event) => {
     const { onChange } = this.props;
     if (onChange && event.target.value === '') {
-      onChange({} as Value)
+      onChange({} as Value);
     }
-  }
+  };
 
   render() {
     const { value = {} as Value, onChange, onError, placeholder, modalTitle, ...rest } = this.props;
@@ -113,7 +113,7 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
     return (
       <>
         <Input
-          placeholder={placeholder || "请选择地址"}
+          placeholder={placeholder || '请选择地址'}
           {...rest}
           className={styles.input}
           onChange={this.handleInputChange}
@@ -121,14 +121,10 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
           onClick={() => this.setState({ mapVisible: true })}
           unselectable="on"
           readOnly
-          suffix={
-            <EnvironmentOutlined
-              onClick={() => this.setState({ mapVisible: true })}
-            />
-          }
+          suffix={<EnvironmentOutlined onClick={() => this.setState({ mapVisible: true })} />}
         />
         <Modal
-          title={modalTitle || "高德地图"}
+          title={modalTitle || '高德地图'}
           width={800}
           visible={mapVisible}
           onCancel={() => this.setState({ mapVisible: false })}

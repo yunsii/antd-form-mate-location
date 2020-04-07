@@ -1,4 +1,4 @@
-declare module "*.less";
+declare module '*.less';
 
 interface Window {
   AMap: any;
