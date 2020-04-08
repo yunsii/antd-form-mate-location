@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _find from 'lodash/find';
 import _get from 'lodash/get';
+
 import { Poi } from './Props';
 import { useIntl } from '../../contexts/IntlContext';
 
@@ -82,7 +83,7 @@ const PlaceSearch: React.FC<PlaceSearchProps> = (props) => {
 
   return (
     <input
-      id="placeSearch"
+      id='placeSearch'
       style={style as any}
       placeholder={intl.getMessage('map.addressInputPlaceholder', '请输入地址')}
     />

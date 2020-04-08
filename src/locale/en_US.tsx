@@ -4,4 +4,4 @@ export default {
     addressPickPlaceholder: 'Pick somewhere',
     addressInputPlaceholder: 'Enter...',
   },
-}
+};

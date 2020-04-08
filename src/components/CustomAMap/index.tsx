@@ -144,7 +144,7 @@ export const AMap: React.FC<AMapProps> = ({
             regeoCode(lnglat.getLng(), lnglat.getLat());
           },
         }}
-        version="1.4.14&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch"
+        version='1.4.14&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch'
         loading={
           <Spin
             style={{
@@ -163,7 +163,7 @@ export const AMap: React.FC<AMapProps> = ({
         <Geolocation
           enableHighAccuracy
           timeout={5000}
-          buttonPosition="RB"
+          buttonPosition='RB'
           events={{
             created: (o) => {
               window.AMap.event.addListener(o, 'complete', (result) => {

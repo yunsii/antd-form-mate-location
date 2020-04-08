@@ -4,4 +4,4 @@ export default {
     addressPickPlaceholder: '请选择地址',
     addressInputPlaceholder: '请输入地址',
   },
-}
+};

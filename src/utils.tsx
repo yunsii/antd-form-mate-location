@@ -114,7 +114,7 @@ export function addDivider(actions: React.ReactNode[]) {
   return _flatten(
     actions.map((item, index) => {
       if (index + 1 < actions.length) {
-        return [item, <Divider key={`${index}_divider`} type="vertical" />];
+        return [item, <Divider key={`${index}_divider`} type='vertical' />];
       }
       return [item];
     })
