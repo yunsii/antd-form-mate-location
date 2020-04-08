@@ -2,9 +2,10 @@ import * as React from 'react';
 import { action } from '@storybook/addon-actions';
 import { Form, Button } from 'antd';
 import FormMate, { IntlProvider as FormIntlProvider, enUSIntl as formEnUSIntl } from 'antd-form-mate';
-import { IntlProvider, enUSIntl } from '../../src';
 
 import FormMateItem from '../components/FormMateItem';
+import { IntlProvider, enUSIntl } from '../../src';
+
 
 const initialValues = {
   location: {
