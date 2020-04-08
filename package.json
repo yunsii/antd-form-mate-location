@@ -6,7 +6,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.0.5",
     "antd": "^4.1.1",
-    "antd-form-mate": "^5.0.0-rc.3",
+    "antd-form-mate": "^5.0.0-rc.4",
     "react": "^16.8.6",
     "react-amap": "^1.2.8",
     "react-amap-plugin-custom-geolocation": "^1.0.1"
