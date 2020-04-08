@@ -4,6 +4,8 @@ import { Form, Button } from 'antd';
 import FormMate, { IntlProvider as FormIntlProvider, enUSIntl as formEnUSIntl } from 'antd-form-mate';
 import { IntlProvider, enUSIntl } from '../../src';
 
+import FormMateItem from '../components/FormMateItem';
+
 const initialValues = {
   location: {
     position: { longitude: 114.104624, latitude: 22.554863 },
@@ -21,10 +23,6 @@ class AdvancedForm extends React.Component {
   };
 
   render() {
-    const newProps = {
-      type: 'location',
-    } as any;
-
     return (
       <FormIntlProvider value={formEnUSIntl}>
         <IntlProvider value={enUSIntl}>
@@ -40,10 +38,14 @@ class AdvancedForm extends React.Component {
               span: 12,
             }}
           >
-            <FormMate.Item type="string" name="string" label="字符串" />
-            <FormMate.Item {...newProps} name="location" label="地址" />
+            <FormMate.Item type='string' name='string' label='字符串' />
+            <FormMateItem
+              type='location'
+              name='location'
+              label='地址'
+            />
             <Form.Item wrapperCol={{ span: 12, offset: 8 }}>
-              <Button type="primary" htmlType="submit" onClick={action('click submit')}>
+              <Button type='primary' htmlType='submit' onClick={action('click submit')}>
                 提交
               </Button>
             </Form.Item>
