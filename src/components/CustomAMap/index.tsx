@@ -65,7 +65,6 @@ export interface AMapProps {
   mapProps?: MapProps;
   onError?: (type: ErrorType, value: any) => void;
   showAddress?: boolean;
-  amapKey?: string;
 }
 
 export const AMap: React.FC<AMapProps> = ({
@@ -79,7 +78,6 @@ export const AMap: React.FC<AMapProps> = ({
   children,
   onError = () => {},
   showAddress = true,
-  amapKey = defaultAmapKey,
 }) => {
   const [locationPosition, setLocationPosition] = useState<Position>({} as Position);
 
@@ -134,8 +132,10 @@ export const AMap: React.FC<AMapProps> = ({
   const customMap = (
     <div style={{ ...wrapperStyle, height: setHeight() }}>
       <Map
-        amapkey={amapKey}
+        amapkey={defaultAmapKey}
         plugins={defaultPlugins as any}
+        version='1.4.14&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch'
+        {...mapProps}
         events={{
           created: handleCreatedMap,
           click: (event) => {
@@ -145,7 +145,6 @@ export const AMap: React.FC<AMapProps> = ({
             regeoCode(lnglat.getLng(), lnglat.getLat());
           },
         }}
-        version='1.4.14&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch'
         loading={
           <Spin
             style={{
@@ -156,7 +155,6 @@ export const AMap: React.FC<AMapProps> = ({
           />
         }
         {...centerProp}
-        {...mapProps}
       >
         {position && !isLocationPosition(locationPosition, position) && (
           <Marker position={{ longitude: position.lng, latitude: position.lat }} />

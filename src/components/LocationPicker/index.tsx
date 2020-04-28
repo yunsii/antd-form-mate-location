@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Input, Modal } from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 import { EnvironmentOutlined } from '@ant-design/icons';
+import { MapProps } from 'react-amap';
 
 import AMap, { ErrorType } from '../CustomAMap';
 import { Position } from '../CustomAMap/Props';
@@ -18,6 +19,7 @@ export interface LocationPickerProps {
   onError?: (type: ErrorType, value: any) => void;
   placeholder?: string;
   modalProps?: ModalProps;
+  amapProps?: MapProps;
 }
 
 export interface LocationPickerState {
@@ -87,7 +89,7 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
   };
 
   render() {
-    const { value = {} as Value, onChange, onError, placeholder, modalProps, ...rest } = this.props;
+    const { value = {} as Value, onChange, onError, placeholder, modalProps, amapProps, ...rest } = this.props;
     const { mapVisible, position, isMounted, formattedAddress } = this.state;
     const { formattedAddress: inputFormattedAddress, position: inputPosition } = value;
 
@@ -108,6 +110,7 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
           this.setState({ formattedAddress: address });
         }}
         onError={onError}
+        mapProps={amapProps}
       />
     );
     if (!isMounted) map = null;
