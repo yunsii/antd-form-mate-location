@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Input, Modal } from 'antd';
+import { ModalProps } from 'antd/lib/modal';
 import { EnvironmentOutlined } from '@ant-design/icons';
 
 import AMap, { ErrorType } from '../CustomAMap';
@@ -16,7 +17,7 @@ export interface LocationPickerProps {
   onChange?: (value: Value) => void;
   onError?: (type: ErrorType, value: any) => void;
   placeholder?: string;
-  modalTitle?: string;
+  modalProps?: ModalProps;
 }
 
 export interface LocationPickerState {
@@ -86,7 +87,7 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
   };
 
   render() {
-    const { value = {} as Value, onChange, onError, placeholder, modalTitle, ...rest } = this.props;
+    const { value = {} as Value, onChange, onError, placeholder, modalProps, ...rest } = this.props;
     const { mapVisible, position, isMounted, formattedAddress } = this.state;
     const { formattedAddress: inputFormattedAddress, position: inputPosition } = value;
 
@@ -125,8 +126,9 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
           suffix={<EnvironmentOutlined onClick={() => this.setState({ mapVisible: true })} />}
         />
         <Modal
-          title={modalTitle || '高德地图'}
+          title={'高德地图'}
           width={800}
+          {...modalProps}
           visible={mapVisible}
           onCancel={() => this.setState({ mapVisible: false })}
           onOk={this.handleMapOk}
