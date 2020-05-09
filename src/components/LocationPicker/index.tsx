@@ -4,13 +4,14 @@ import { ModalProps } from 'antd/lib/modal';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import { MapProps } from 'react-amap';
 
-import AMap, { ErrorType } from '../CustomAMap';
+import AMap, { ErrorType, AddressInfo } from '../CustomAMap';
 import { Position } from '../CustomAMap/Props';
 import styles from './index.less';
 
 export type Value = {
   position: Position | undefined;
   formattedAddress: string;
+  extra?: AddressInfo;
 };
 
 export interface LocationPickerProps {
@@ -24,8 +25,9 @@ export interface LocationPickerProps {
 
 export interface LocationPickerState {
   mapVisible: boolean;
-  position: Position | undefined;
-  formattedAddress: undefined | string;
+  position?: Position;
+  formattedAddress?: string;
+  extra?: AddressInfo;
   isMounted: boolean;
 }
 
@@ -36,6 +38,7 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
     mapVisible: false,
     position: undefined,
     formattedAddress: '',
+    extra: {} as any,
     isMounted: false,
   };
 
@@ -59,11 +62,12 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
 
   handleMapOk = () => {
     const { onChange } = this.props;
-    const { position, formattedAddress } = this.state;
+    const { position, formattedAddress, extra } = this.state;
     if (onChange) {
       onChange({
         position,
         formattedAddress,
+        extra,
       });
     }
     this.setState({
@@ -100,10 +104,11 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
         onCreated={this.handleMapCreated}
         onClick={this.handleMapClick}
         getFormattedAddress={(address, info) => {
-          console.log(info);
+          console.log('get info', info);
           if (!address) {
             this.setState({
               formattedAddress: '',
+              extra: info,
             });
             return;
           }
