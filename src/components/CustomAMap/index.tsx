@@ -15,26 +15,24 @@ const defaultMapWrapperHeight = 400;
 const titleHeight = 37;
 const spinHight = 16;
 
-export const geoCode = (address, callback) => {
-  if (geocoder) {
-    (geocoder as any).getLocation(address, callback);
-  }
-  // geocoder.getLocation(address, (status, result) => {
-  //   console.log(address);
-  //   console.log(status);
-  //   console.log(result);
-  //   if (status === 'complete' && result.geocodes.length) {
-  //     return result.geocodes[0];
-  //   }
-  //   console.error('根据地址查询位置失败');
-  //   return {};
-  // });
-};
-
 function isLocationPosition(locationPosition: Position, position: Position) {
   const { lng: locationLng, lat: locationLat } = locationPosition;
   const { lng, lat } = position;
   return locationLng === lng && locationLat === lat;
+}
+
+function filterAddressComponent(values) {
+  return {
+    adcode: values.adcode,
+    city: values.city,
+    /** 定位成功后返回 citycode ，逆地址编码返回 cityCode */
+    cityCode: values.citycode || values.cityCode,
+    district: values.district,
+    province: values.province,
+    street: values.street,
+    streetNumber: values.streetNumber,
+    township: values.township,
+  };
 }
 
 export type ErrorType = 'locationError' | 'getFormattedAddress';
@@ -43,13 +41,13 @@ export interface AddressInfo {
   lat: number;
   lng: number;
   adcode: string;
+  city: string;
+  cityCode: string;
   district: string;
-  city?: string;
-  citycode?: string;
-  province?: string;
-  street?: string;
-  streetNumber?: string;
-  township?: string;
+  province: string;
+  street: string;
+  streetNumber: string;
+  township: string;/*  */
 }
 
 export interface AMapProps {
@@ -94,7 +92,7 @@ export const AMap: React.FC<AMapProps> = ({
   const regeoCode = (longitude: number, latitude: number) => {
     if (geocoder) {
       (geocoder as any).getAddress([longitude, latitude], (status, result) => {
-        console.log(status, result);
+        console.log('regeoCode', status, result);
         if (status === 'complete') {
           const {
             regeocode: { addressComponent, formattedAddress: resultAddress },
@@ -102,7 +100,7 @@ export const AMap: React.FC<AMapProps> = ({
           getFormattedAddress(resultAddress, {
             lat: latitude,
             lng: longitude,
-            ...addressComponent,
+            ...filterAddressComponent(addressComponent),
           });
         } else {
           onError('getFormattedAddress', { status, result });
@@ -140,7 +138,6 @@ export const AMap: React.FC<AMapProps> = ({
           created: handleCreatedMap,
           click: (event) => {
             const { lnglat } = event;
-            console.log('click position:', `${lnglat.getLng()}, ${lnglat.getLat()}`);
             onClick(lnglat.getLng(), lnglat.getLat());
             regeoCode(lnglat.getLng(), lnglat.getLat());
           },
@@ -156,7 +153,7 @@ export const AMap: React.FC<AMapProps> = ({
         }
         {...centerProp}
       >
-        {position && !isLocationPosition(locationPosition, position) && (
+        {position && position.lng && !isLocationPosition(locationPosition, position) && (
           <Marker position={{ longitude: position.lng, latitude: position.lat }} />
         )}
         <Geolocation
@@ -166,6 +163,7 @@ export const AMap: React.FC<AMapProps> = ({
           events={{
             created: (o) => {
               window.AMap.event.addListener(o, 'complete', (result) => {
+                console.log('Geolocation', result);
                 const { addressComponent, formattedAddress, position } = result;
                 setLocationPosition({
                   lng: result.position.lng,
@@ -175,7 +173,7 @@ export const AMap: React.FC<AMapProps> = ({
                 getFormattedAddress(formattedAddress, {
                   lat: position.lat,
                   lng: position.lng,
-                  ...addressComponent,
+                  ...filterAddressComponent(addressComponent),
                 });
               }); // 返回定位信息
               window.AMap.event.addListener(o, 'error', ({ info, message: msg }) => {
@@ -191,13 +189,7 @@ export const AMap: React.FC<AMapProps> = ({
             const { location } = poi;
             if (location) {
               onClick(location.lng, location.lat);
-              const address = `${poi.district}${poi.address}${poi.name}`;
-              getFormattedAddress(address, {
-                lat: location.lat,
-                lng: location.lng,
-                adcode: poi.adcode,
-                district: poi.district,
-              });
+              regeoCode(location.lng, location.lat);
             }
           }}
         />
