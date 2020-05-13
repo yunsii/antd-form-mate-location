@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Input, Modal } from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 import { EnvironmentOutlined } from '@ant-design/icons';
@@ -31,38 +31,36 @@ export interface LocationPickerState {
   isMounted: boolean;
 }
 
-export default class LocationPicker extends Component<LocationPickerProps, LocationPickerState> {
-  map: any;
+const LocationPicker: React.FC<LocationPickerProps> = (props) => {
+  const [mapVisible, setMapVisible] = useState<boolean>(false);
+  const [position, setPosition] = useState<Position>();
+  const [formattedAddress, setFormattedAddress] = useState<string>('');
+  const [extra, setExtra] = useState<AddressInfo>({} as any);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
-  state = {
-    mapVisible: false,
-    position: undefined,
-    formattedAddress: '',
-    extra: {} as any,
-    isMounted: false,
+  const mapRef = useRef<any>();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { value = {} as Value, onChange, onError, placeholder, modalProps, amapProps, ...rest } = props;
+  const { formattedAddress: inputFormattedAddress, position: inputPosition } = value;
+
+  const handleMapCreated = (map) => {
+    if (map) {
+      mapRef.current = map;
+    }
   };
 
-  componentDidMount() {
-    this.setState({
-      isMounted: true,
+  const handleMapClick = (lng, lat) => {
+    setPosition({
+      lng,
+      lat,
     });
-  }
-
-  handleMapCreated = (map) => {
-    console.log('amap is created.');
-    if (map) this.map = map;
   };
 
-  handleMapClick = (lng, lat) => {
-    console.log('handleMapClick', lng, lat);
-    this.setState({
-      position: { lng, lat },
-    });
-  };
-
-  handleMapOk = () => {
-    const { onChange } = this.props;
-    const { position, formattedAddress, extra } = this.state;
+  const handleMapOk = () => {
     if (onChange) {
       onChange({
         position,
@@ -70,82 +68,71 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
         extra,
       });
     }
-    this.setState({
-      mapVisible: false,
-    });
+    setMapVisible(false);
   };
 
-  handleAfterMapClose = () => {
-    this.setState({
-      position: undefined,
-      formattedAddress: undefined,
-    });
-    if (this.map) {
-      this.map.clearMap();
-    }
+  const handleAfterMapClose = () => {
+    setPosition(undefined);
+    setFormattedAddress('');
+
+    mapRef.current && mapRef.current.clearMap();
   };
 
-  handleInputChange = (event) => {
-    const { onChange } = this.props;
+  const handleInputChange = (event) => {
     if (onChange && event.target.value === '') {
       onChange({} as Value);
     }
   };
 
-  render() {
-    const { value = {} as Value, onChange, onError, placeholder, modalProps, amapProps, ...rest } = this.props;
-    const { mapVisible, position, isMounted, formattedAddress } = this.state;
-    const { formattedAddress: inputFormattedAddress, position: inputPosition } = value;
+  let map: any = (
+    <AMap
+      position={position || inputPosition}
+      formattedAddress={formattedAddress || inputFormattedAddress}
+      onCreated={handleMapCreated}
+      onClick={handleMapClick}
+      getFormattedAddress={(address, info) => {
+        console.log('get address', address);
+        console.log('get info', info);
+        if (!address) {
+          setFormattedAddress('');
+          setExtra({} as any);
+          return;
+        }
+        setFormattedAddress(address);
+        setExtra(info || ({} as any));
+      }}
+      onError={onError}
+      mapProps={amapProps}
+    />
+  );
+  if (!isMounted) map = null;
 
-    let map: any = (
-      <AMap
-        position={position || inputPosition}
-        formattedAddress={formattedAddress || inputFormattedAddress}
-        onCreated={this.handleMapCreated}
-        onClick={this.handleMapClick}
-        getFormattedAddress={(address, info) => {
-          console.log('get address', address);
-          console.log('get info', info);
-          if (!address) {
-            this.setState({
-              formattedAddress: '',
-              extra: undefined,
-            });
-            return;
-          }
-          this.setState({ formattedAddress: address, extra: info });
-        }}
-        onError={onError}
-        mapProps={amapProps}
+  return (
+    <>
+      <Input
+        placeholder={placeholder || '请选择地址'}
+        {...rest}
+        className={styles.input}
+        onChange={handleInputChange}
+        value={inputFormattedAddress}
+        onClick={() => setMapVisible(true)}
+        unselectable='on'
+        readOnly
+        suffix={<EnvironmentOutlined onClick={() => setMapVisible(true)} />}
       />
-    );
-    if (!isMounted) map = null;
+      <Modal
+        title={'高德地图'}
+        width={800}
+        {...modalProps}
+        visible={mapVisible}
+        onCancel={() => setMapVisible(false)}
+        onOk={handleMapOk}
+        afterClose={handleAfterMapClose}
+      >
+        {map}
+      </Modal>
+    </>
+  );
+};
 
-    return (
-      <>
-        <Input
-          placeholder={placeholder || '请选择地址'}
-          {...rest}
-          className={styles.input}
-          onChange={this.handleInputChange}
-          value={inputFormattedAddress}
-          onClick={() => this.setState({ mapVisible: true })}
-          unselectable='on'
-          readOnly
-          suffix={<EnvironmentOutlined onClick={() => this.setState({ mapVisible: true })} />}
-        />
-        <Modal
-          title={'高德地图'}
-          width={800}
-          {...modalProps}
-          visible={mapVisible}
-          onCancel={() => this.setState({ mapVisible: false })}
-          onOk={this.handleMapOk}
-          afterClose={this.handleAfterMapClose}
-        >
-          {map}
-        </Modal>
-      </>
-    );
-  }
-}
+export default LocationPicker;
