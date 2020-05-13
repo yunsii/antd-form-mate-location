@@ -104,15 +104,16 @@ export default class LocationPicker extends Component<LocationPickerProps, Locat
         onCreated={this.handleMapCreated}
         onClick={this.handleMapClick}
         getFormattedAddress={(address, info) => {
+          console.log('get address', address);
           console.log('get info', info);
           if (!address) {
             this.setState({
               formattedAddress: '',
-              extra: info,
+              extra: undefined,
             });
             return;
           }
-          this.setState({ formattedAddress: address });
+          this.setState({ formattedAddress: address, extra: info });
         }}
         onError={onError}
         mapProps={amapProps}
