@@ -49,6 +49,7 @@ const PlaceSearch: React.FC<PlaceSearchProps> = (props) => {
     const [center, poi] = setCenterAndPoi();
     if (center && poi) {
       map.setCenter(new window.AMap.LngLat(center.lng, center.lat));
+      map.setFitView();
       onPlaceSelect(e.poi);
     }
   };
